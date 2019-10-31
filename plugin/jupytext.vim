@@ -306,9 +306,9 @@ function s:read_from_ipynb()
     silent 1delete
     let &undolevels = levels
     if has("patch-8.1.1113")
-        silent execute "autocmd jupytext_ipynb BufEnter <buffer> ++once redraw | echo fnamemodify(b:jupytext_file, ':.').' via jupytext.'"
+        silent execute "autocmd jupytext_ipynb BufEnter <buffer> ++once redraw | echohl ModeMsg | echo 'jupytext.vim started' | echohl Normal"
     else
-        silent execute "autocmd jupytext_ipynb BufEnter <buffer> redraw | echo fnamemodify(b:jupytext_file, ':.').' via jupytext.'"
+        silent execute "autocmd jupytext_ipynb BufEnter <buffer> redraw | echohl ModeMsg | echo 'jupytext.vim started' | echohl Normal"
     endif
 
 endfunction
@@ -337,13 +337,20 @@ function s:write_to_ipynb() abort
     \         . " " . g:jupytext_to_ipynb_opts . " "
     \         . shellescape(b:jupytext_file)
     call s:debugmsg("cmd: ".l:cmd)
-    let l:output=system(l:cmd)
-    call s:debugmsg(l:output)
-    if v:shell_error
-        echoerr l:cmd.": ".v:shell_error
-    else
+    call jobstart(l:cmd, {'on_exit': function('s:jupytext_exit_callback')})
+endfunction
+
+
+function s:jupytext_exit_callback(id, data, event) abort
+    if a:data == 0
         setlocal nomodified
-        echo expand("%") . " saved via jupytext."
+        echohl ModeMsg
+        echomsg "jupytext.vim: notebook updated"
+        echohl Normal
+    else
+        echohl ErrorMsg
+        echomsg "jupytext.vim: notebook update failed!"
+        echohl Normal
     endif
 endfunction
 
