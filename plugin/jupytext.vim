@@ -280,11 +280,7 @@ function s:read_from_ipynb()
         call s:debugmsg("read ".fnameescape(b:jupytext_file))
         silent execute "read ++enc=utf-8 ".fnameescape(b:jupytext_file)
     endif
-    if b:jupytext_file_exists
-        let l:register_unload_cmd = "autocmd jupytext_ipynb BufUnload <buffer> call s:cleanup(\"".fnameescape(b:jupytext_file)."\", 0)"
-    else
-        let l:register_unload_cmd = "autocmd jupytext_ipynb BufUnload <buffer> call s:cleanup(\"".fnameescape(b:jupytext_file)."\", 1)"
-    endif
+    let l:register_unload_cmd = "autocmd jupytext_ipynb BufUnload <buffer> call s:cleanup(\"".fnameescape(b:jupytext_file)."\")"
     call s:debugmsg(l:register_unload_cmd)
     silent execute l:register_unload_cmd
 
@@ -342,7 +338,7 @@ function s:jupytext_exit_callback(id, data, event) abort
         echohl ModeMsg
         echomsg "jupytext.vim: notebook updated"
         echohl Normal
-    else
+    elseif &modified == 1
         echohl ErrorMsg
         echomsg "jupytext.vim: notebook update failed!"
         echohl Normal
@@ -350,9 +346,9 @@ function s:jupytext_exit_callback(id, data, event) abort
 endfunction
 
 
-function s:cleanup(jupytext_file, delete)
+function s:cleanup(jupytext_file)
     call s:debugmsg("a:jupytext_file:".a:jupytext_file)
-    if a:delete
+    if !b:jupytext_file_exists
         call s:debugmsg("deleting ".fnameescape(a:jupytext_file))
         call delete(expand(fnameescape(a:jupytext_file)))
     endif
