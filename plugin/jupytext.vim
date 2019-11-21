@@ -114,7 +114,7 @@
 "       let g:jupytext_fmt = 'markdown'
 "       let g:jupytext_to_ipynb_opts = '--to=notebook'
 
-if exists("loaded_jupytext") || &cp || exists("#BufReadCmd#*.ipynb")
+if exists("g:loaded_jupytext") || &cp || exists("#BufReadCmd#*.ipynb")
     finish
 endif
 
@@ -242,7 +242,7 @@ endif
 augroup jupytext_ipynb
     " Remove all ipynb autocommands
     au!
-    autocmd BufReadCmd *.ipynb  call s:read_from_ipynb()
+    autocmd BufReadCmd *.ipynb call s:read_from_ipynb()
 augroup END
 
 
@@ -305,12 +305,7 @@ function s:read_from_ipynb()
     set undolevels=-1
     silent 1delete
     let &undolevels = levels
-    if has("patch-8.1.1113")
-        silent execute "autocmd jupytext_ipynb BufEnter <buffer> ++once redraw | echohl ModeMsg | echo 'jupytext.vim started' | echohl Normal"
-    else
-        silent execute "autocmd jupytext_ipynb BufEnter <buffer> redraw | echohl ModeMsg | echo 'jupytext.vim started' | echohl Normal"
-    endif
-
+    silent execute "autocmd jupytext_ipynb BufEnter <buffer> ++once redraw | echohl ModeMsg | echomsg 'jupytext.vim started' | echohl Normal"
 endfunction
 
 
@@ -364,4 +359,4 @@ function s:cleanup(jupytext_file, delete)
 endfunction
 
 
-let loaded_jupytext = 1
+let g:loaded_jupytext = 1
