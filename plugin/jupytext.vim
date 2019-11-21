@@ -302,6 +302,7 @@ function s:read_from_ipynb()
     silent 1delete
     let &undolevels = levels
     silent execute "autocmd jupytext_ipynb BufEnter <buffer> ++once redraw | echohl ModeMsg | echomsg 'jupytext.vim started' | echohl Normal"
+    silent execute "setl buftype=acwrite"
 endfunction
 
 
