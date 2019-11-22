@@ -234,6 +234,10 @@ if !exists('g:jupytext_to_ipynb_opts')
     let g:jupytext_to_ipynb_opts = '--to=ipynb --update'
 endif
 
+if !exists('g:jupytext_ignore_existing_jupytext_file')
+    let g:jupytext_ignore_existing_jupytext_file = 0
+endif
+
 if !g:jupytext_enable
     finish
 endif
@@ -255,7 +259,7 @@ function s:read_from_ipynb()
         return
     endif
     let b:jupytext_file = s:get_jupytext_file(l:filename, g:jupytext_fmt)
-    let b:jupytext_file_exists = filereadable(b:jupytext_file)
+    let b:jupytext_file_exists = filereadable(b:jupytext_file) && !g:jupytext_ignore_existing_jupytext_file
     let l:filename_exists = filereadable(l:filename)
     call s:debugmsg("filename: ".l:filename)
     call s:debugmsg("filename exists: ".l:filename_exists)
