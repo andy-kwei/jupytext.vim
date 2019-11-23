@@ -259,7 +259,11 @@ function s:read_from_ipynb()
         return
     endif
     let b:jupytext_file = s:get_jupytext_file(l:filename, g:jupytext_fmt)
-    let b:jupytext_file_exists = filereadable(b:jupytext_file) && !g:jupytext_ignore_existing_jupytext_file
+    if g:jupytext_ignore_existing_jupytext_file
+        let b:jupytext_file_exists = 0
+    else
+        let b:jupytext_file_exists = filereadable(b:jupytext_file)
+    endif
     let l:filename_exists = filereadable(l:filename)
     call s:debugmsg("filename: ".l:filename)
     call s:debugmsg("filename exists: ".l:filename_exists)
