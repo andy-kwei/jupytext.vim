@@ -288,7 +288,7 @@ function s:read_from_ipynb()
         call s:debugmsg("read ".fnameescape(b:jupytext_file))
         silent execute "read ++enc=utf-8 ".fnameescape(b:jupytext_file)
     endif
-    let l:register_unload_cmd = "autocmd jupytext_ipynb BufUnload <buffer> call s:cleanup(\"".fnameescape(b:jupytext_file)."\")"
+    let l:register_unload_cmd = "autocmd jupytext_ipynb BufUnload <buffer> call s:cleanup(\"".fnameescape(b:jupytext_file)."\",".!b:jupytext_file_exists.")"
     call s:debugmsg(l:register_unload_cmd)
     silent execute l:register_unload_cmd
 
@@ -355,9 +355,9 @@ function s:jupytext_exit_callback(id, data, event) abort
 endfunction
 
 
-function s:cleanup(jupytext_file)
+function s:cleanup(jupytext_file, delete)
     call s:debugmsg("a:jupytext_file:".a:jupytext_file)
-    if !b:jupytext_file_exists
+    if a:delete
         call s:debugmsg("deleting ".fnameescape(a:jupytext_file))
         call delete(expand(fnameescape(a:jupytext_file)))
     endif
